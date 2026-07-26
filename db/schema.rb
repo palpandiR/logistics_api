@@ -16,10 +16,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_25_170128) do
 
   create_table "customers", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "email"
-    t.string "name"
+    t.string "email", null: false
+    t.string "name", null: false
     t.string "phone"
+    t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_customers_on_email", unique: true
+    t.index ["status"], name: "index_customers_on_status"
   end
 
   create_table "users", force: :cascade do |t|

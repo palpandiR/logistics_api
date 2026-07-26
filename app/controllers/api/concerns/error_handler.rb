@@ -1,12 +1,10 @@
 module Api
   module Concerns
     module ErrorHandler
-
       extend ActiveSupport::Concern
 
 
       included do
-
         # Database Record Missing
         rescue_from ActiveRecord::RecordNotFound,
                     with: :record_not_found
@@ -46,6 +44,9 @@ module Api
         rescue_from StandardError,
                     with: :internal_server_error
 
+        # Authorization header is missing
+        rescue_from AuthenticationError,
+                   with: :authentication_failed
       end
 
 
@@ -58,7 +59,6 @@ module Api
       # -----------------------------
 
       def record_not_found(exception)
-
         error_response(
           message: "Resource not found",
           errors: [
@@ -69,7 +69,6 @@ module Api
           ],
           status: :not_found
         )
-
       end
 
 
@@ -79,20 +78,16 @@ module Api
       # -----------------------------
 
       def record_invalid(exception)
-
         error_response(
           message: "Validation failed",
           errors: exception.record.errors.map do |error|
-
             {
               field: error.attribute,
               message: error.message
             }
-
           end,
           status: :unprocessable_entity
         )
-
       end
 
 
@@ -102,17 +97,15 @@ module Api
       # -----------------------------
 
       def parameter_missing(exception)
-
         error_response(
           message: "Required parameter missing",
-          errors:[
+          errors: [
             {
               field: exception.param
             }
           ],
           status: :bad_request
         )
-
       end
 
 
@@ -122,17 +115,15 @@ module Api
       # -----------------------------
 
       def invalid_token(exception)
-
         error_response(
           message: "Invalid authentication token",
-          errors:[
+          errors: [
             {
-              code:"INVALID_TOKEN"
+              code: "INVALID_TOKEN"
             }
           ],
           status: :unauthorized
         )
-
       end
 
 
@@ -142,17 +133,15 @@ module Api
       # -----------------------------
 
       def authorization_failed(exception)
-
         error_response(
-          message:"You are not authorized",
-          errors:[
+          message: "You are not authorized",
+          errors: [
             {
-              code:"FORBIDDEN"
+              code: "FORBIDDEN"
             }
           ],
           status: :forbidden
         )
-
       end
 
 
@@ -162,22 +151,20 @@ module Api
       # -----------------------------
 
       def database_connection_error(exception)
-
         Rails.logger.error(
           "Database connection failed: #{exception.message}"
         )
 
 
         error_response(
-          message:"Service temporarily unavailable",
-          errors:[
+          message: "Service temporarily unavailable",
+          errors: [
             {
-              code:"DATABASE_UNAVAILABLE"
+              code: "DATABASE_UNAVAILABLE"
             }
           ],
           status: :service_unavailable
         )
-
       end
 
 
@@ -187,27 +174,34 @@ module Api
       # -----------------------------
 
       def rate_limit_exceeded(exception)
-
         error_response(
-          message:"Too many requests",
-          errors:[
+          message: "Too many requests",
+          errors: [
             {
-              code:"RATE_LIMIT_EXCEEDED"
+              code: "RATE_LIMIT_EXCEEDED"
             }
           ],
           status: :too_many_requests
         )
-
       end
 
-
+      def authentication_failed(exception)
+        error_response(
+          message: exception.message,
+          errors: [
+            {
+              code: "UNAUTHORIZED"
+            }
+          ],
+          status: :unauthorized
+        )
+      end
 
       # -----------------------------
       # Unexpected Error
       # -----------------------------
 
       def internal_server_error(exception)
-
         Rails.logger.error(
           exception.message
         )
@@ -218,18 +212,15 @@ module Api
 
 
         error_response(
-          message:"Something went wrong",
-          errors:[
+          message: "Something went wrong",
+          errors: [
             {
-              code:"INTERNAL_ERROR"
+              code: "INTERNAL_ERROR"
             }
           ],
           status: :internal_server_error
         )
-
       end
-
-
     end
   end
 end
