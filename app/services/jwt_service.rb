@@ -4,7 +4,6 @@ class JwtService
 
 
   def self.encode(payload)
-    binding.pry
     JWT.encode(
       payload,
       SECRET_KEY

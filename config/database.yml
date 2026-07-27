@@ -86,12 +86,11 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+
 production:
   primary: &primary_production
     <<: *default
     database: logistics_api_production
-    username: logistics_api
-    password: <%= ENV["LOGISTICS_API_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: logistics_api_production_cache

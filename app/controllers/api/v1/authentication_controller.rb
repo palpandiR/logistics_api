@@ -1,15 +1,10 @@
 module Api
  module V1
-
   class AuthenticationController < BaseController
-
-
     skip_before_action :authenticate_user!
 
 
     def login
-
-
       user =
         User.find_by(
           email: params[:email]
@@ -22,17 +17,17 @@ module Api
 
         token =
           JwtService.encode(
-            user_id:user.id
+            user_id: user.id
           )
 
 
         success_response(
 
-          data:{
-            token:token
+          data: {
+            token: token
           },
 
-          message:"Login successful"
+          message: "Login successful"
 
         )
 
@@ -42,7 +37,7 @@ module Api
 
         error_response(
 
-          message:"Invalid email or password",
+          message: "Invalid email or password",
 
           status: :unauthorized
 
@@ -50,10 +45,7 @@ module Api
 
 
       end
-
     end
-
-
   end
  end
 end

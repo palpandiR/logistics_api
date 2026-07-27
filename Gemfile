@@ -99,3 +99,5 @@ group :development do
   gem "rubocop-rails-omakase", require: false
   gem "brakeman", require: false
 end
+
+gem "pry"

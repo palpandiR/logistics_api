@@ -4,8 +4,15 @@ class CustomerPolicy < ApplicationPolicy
   end
 
   def show?
-    user.admin? ||
-    user.id == record.user_id
+    user.admin?
+  end
+
+  def create?
+    user.admin?
+  end
+
+  def update?
+    user.admin?
   end
 
   def destroy?
